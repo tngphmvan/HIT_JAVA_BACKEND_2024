@@ -1,6 +1,7 @@
 package com.example.homeworkweek3.Controller;
 
 import com.example.homeworkweek3.model.User;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-public class UserController {
-    private final List<User> users = new ArrayList<>();
 
+public class UserController {
+    private List<User> users = new ArrayList<>(List.of(new User("Hola", "Pepsi"),
+            new User("NamDi", "BayHai")));
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
@@ -22,9 +24,10 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user) {
-        users.add(user);
-        return "redirect:/login";
+    public String registerUser(@RequestParam String username, @RequestParam String password) {
+        users.add(new User(username, password));
+//        System.out.println(user);
+        return "redirect:/content";
     }
 
     @GetMapping("/login")
@@ -48,5 +51,14 @@ public class UserController {
     public String showContent(Model model) {
         model.addAttribute("users", users);
         return "content";
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok().body(users);
+    }
+
+    public List<User> getUsers() {
+        return users;
     }
 }
